@@ -295,22 +295,43 @@ routes.post('/encomendas', async (req, res) => {
     }
 
 })
-routes.get('/encomendas/:companie_id', async (req, res) => {
+routes.get('/encomendas/:companie_id/disponiveis', async (req, res) => {
     try {
         const { companie_id } = req.params;
 
-        const selecao = await connection('encomendas').select('*').where('companie_id', companie_id);
+        const selecao = await connection('encomendas').select('*').where('companie_id', companie_id).whereNotNull('avaliable_at');
+        console.log(selecao)
+        if (selecao.length==0 ) {
+
+            throw new MinhaExcessao(500, 'nenhum conteudo')
+        }
+         
+        return res.status(200).json({ message: "erro interno no servidor", selecao });
+    } catch (error) {
+        return res.status(error.status ? error.status : 500).send(error.message);
+    }
+})
+routes.get('/encomendas/:companie_id/entregues', async (req, res) => {
+    {
+        try {
+        const { companie_id } = req.params;
+      
+
+        const selecao = await connection('encomendas').select('*').where('companie_id', companie_id).whereNotNull('delivered_at');
         console.log(selecao)
         if (selecao.length==0 ) {
 
             throw new MinhaExcessao(404, 'NOT FOUND')
         }
          
-        return res.status(200).json({ message: "tudo ok!", selecao });
+        return res.status(200).json({ message: "código de encomenda achado!está disponivel", selecao }); 
     } catch (error) {
         return res.status(error.status ? error.status : 404).send(error.message);
     }
-})
+       
+
+
+}})
 function MinhaExcessao(status, message) {
     this.status = status;
     this.message = message;
