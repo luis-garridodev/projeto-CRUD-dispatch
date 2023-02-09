@@ -1,6 +1,8 @@
+const { Router } = require('express');
 const express = require('express');
 
 const connection = require('./db');
+const encomendasRoutes = require('./routes/encomendasRouter');
 const routes = express.Router();
 const validacnpj = require('./utilitarios');
 
@@ -195,13 +197,13 @@ routes.post('/companies', async (req, res) => {
         console.log(pesquisa);
         console.log("olá");
 
-       
+
         return res.status(200).json({ message: "tudo ok!" });
 
         // console.log(insercao);
 
 
-        
+
     } catch (err) {
         return res.status(500).json({ message: "opa!estamos com problemas técnicos!" });
     }
@@ -264,7 +266,11 @@ routes.delete('/companies/:id', async (req, res) => {
     }
 
 })
-
+routes.use('/encomendas', encomendasRoutes)
+function MinhaExcessao(status, message) {
+    this.status = status;
+    this.message = message;
+}
 
 
 
